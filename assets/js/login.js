@@ -3,66 +3,55 @@ $(function() {
         $('.reg_box').show()
         $('.login_box').hide()
     })
+
     $('.reg_box a').on('click', function() {
         $('.login_box').show()
         $('.reg_box').hide()
     })
-
     let form = layui.form
     let layer = layui.layer
     form.verify({
         pass: [
-            /^[\S]{6,12}$/,
-            '密码必须6到16位,且不能出现空格'
+            /^[\S]{6,12}$/, '密码必须6到12位,且不能出现空格'
         ],
-
-
-        rpwd: function name(value) {
-            let p = $('#p').val()
-            if (value !== p) {
-                return '两次密码不一致'
+        reg_paw: function(val) {
+            if (val !== $('#password').val()) {
+                return '密码输入不一致'
             }
         }
     })
 
-    // 注册
-    $('#form_reg').on('submit', function(e) {
+
+    $('#reg_form').on('submit', function(e) {
         e.preventDefault()
+
         $.ajax({
             type: 'POST',
-            url: '/api/reguser',
-            data: {
-                username: $('#name').val(),
-                password: $('#p').val()
-            },
+            url: 'http://api-breakingnews-web.itheima.net/api/reguser',
+            data: $(this).serialize(),
             success: function(res) {
-
                 if (res.status !== 0) {
                     return layer.msg(res.message)
                 }
-                layer.msg(res.message + '请登入')
-                $('#login').click();
+                layer.msg('注册成功，请登入！！')
+                $('#reg_form a').click();
             }
         })
     })
 
 
-    // 登入
-    $('#form_login').on('submit', function(e) {
-        // console.log($(this).serialize());
+
+    $('#login_form').on('submit', function(e) {
         e.preventDefault()
         $.ajax({
             type: 'POST',
-            url: '/api/login',
+            url: 'http://api-breakingnews-web.itheima.net/api/login',
             data: $(this).serialize(),
             success: function(res) {
                 if (res.status !== 0) {
-                    console.log(res);
-                    return layer.msg('登入失败')
+                    return console.log(res);
                 }
-                layer.msg('登入成功')
-                console.log(res);
-                localStorage.setItem('token', res.token)
+                localStorage.setItem('token', res.token);
                 location.href = '/index.html'
             }
         })
